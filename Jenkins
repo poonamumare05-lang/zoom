@@ -12,6 +12,7 @@ pipeline {
                 git branch: 'main',
                     url: 'https://github.com/poonamumare05-lang/zoom.git'
         }
+}
 
         stage('Deploy') {
             steps {
