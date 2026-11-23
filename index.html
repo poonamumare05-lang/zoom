@@ -1,0 +1,182 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Zoom Meeting Application</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #202124;
+            color: white;
+            text-align: center;
+        }
+
+        header {
+            background: #292a2d;
+            padding: 20px;
+            font-size: 25px;
+            color: #2D8CFF;
+        }
+
+        .meeting {
+            padding: 30px;
+        }
+
+        .video-box {
+            background: #34363a;
+            width: 70%;
+            height: 350px;
+            margin: 20px auto;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .controls {
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 13px 22px;
+            margin: 8px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            background: #41444a;
+            color: white;
+        }
+
+        button:hover {
+            background: #2D8CFF;
+        }
+
+        .leave {
+            background: #e53935;
+        }
+
+        .status {
+            margin-top: 20px;
+            color: #00e676;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    Zoom Meeting Application
+</header>
+
+<div class="meeting">
+
+    <h2>Welcome to Zoom Meeting</h2>
+
+    <p>Join your online meeting here</p>
+
+    <div class="video-box">
+        <video id="video" autoplay playsinline muted></video>
+        <span id="placeholder">Your video will appear here</span>
+    </div>
+
+    <div class="controls">
+
+        <button onclick="startCamera()">Start Camera</button>
+
+        <button onclick="toggleMic()">Mute / Unmute</button>
+
+        <button onclick="toggleCamera()">Stop / Start Video</button>
+
+        <button class="leave" onclick="leaveMeeting()">Leave Meeting</button>
+
+    </div>
+
+    <div class="status" id="status">
+        Meeting not started
+    </div>
+
+</div>
+
+<script>
+
+let stream;
+let micOn = true;
+let cameraOn = true;
+
+async function startCamera() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true
+        });
+
+        document.getElementById("video").srcObject = stream;
+        document.getElementById("placeholder").style.display = "none";
+        document.getElementById("status").innerText = "Camera started successfully!";
+        
+        micOn = true;
+        cameraOn = true;
+
+    } catch (error) {
+        alert("Camera or microphone permission denied!");
+    }
+}
+
+function toggleMic() {
+    if (!stream) {
+        alert("Start camera first!");
+        return;
+    }
+
+    micOn = !micOn;
+
+    stream.getAudioTracks().forEach(track => {
+        track.enabled = micOn;
+    });
+
+    document.getElementById("status").innerText =
+        micOn ? "Microphone ON" : "Microphone MUTED";
+}
+
+function toggleCamera() {
+    if (!stream) {
+        alert("Start camera first!");
+        return;
+    }
+
+    cameraOn = !cameraOn;
+
+    stream.getVideoTracks().forEach(track => {
+        track.enabled = cameraOn;
+    });
+
+    document.getElementById("status").innerText =
+        cameraOn ? "Camera ON" : "Camera OFF";
+}
+
+function leaveMeeting() {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+
+    document.getElementById("video").srcObject = null;
+    document.getElementById("placeholder").style.display = "block";
+    document.getElementById("status").innerText = "You left the meeting";
+}
+
+</script>
+
+</body>
+</html>
