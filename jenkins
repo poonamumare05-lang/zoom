@@ -1,0 +1,67 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/YOUR-USERNAME/jenkins-html-project.git'
+            }
+        }
+
+        stage('Deploy HTML') {
+            steps {
+                sh '''
+                    scp -i /var/lib/jenkins/.ssh/webserver.pem                     
+                    index.html ubuntu@16.171.208.10:/var/www/html/index.html
+                '''
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                sh '''
+                    ssh -i /var/lib/jenkins/.ssh/webserver.pem ubuntu@16.171.208.10                     
+                    "ls -l /var/www/html/index.html"
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Website deployed successfully!'
+        }
+        failure {
+            echo 'Deployment failed. Check Console Output.'
+        }
+    }
+}
+pipeline {
+    agent any
+
+    options {
+        skipDefaultCheckout(true)
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/cjcnkolhe/b53_zoomwebapp.git'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying Zoom application'
+
+                sh '''
+                    rm -rf /var/www/html/*
+                    cp -r * /var/www/html/
+                '''
+            }
+        }
+    }
+}
