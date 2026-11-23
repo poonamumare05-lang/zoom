@@ -1,45 +1,6 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/poonamumare05-lang/jenkins-html-project.git'
-            }
-        }
-
-        stage('Deploy HTML') {
-            steps {
-                sh '''
-                    scp -i /var/lib/jenkins/.ssh/webserver.pem                     
-                    index.html ubuntu@16.171.208.10:/var/www/html/index.html
-                '''
-            }
-        }
-
-        stage('Verify') {
-            steps {
-                sh '''
-                    ssh -i /var/lib/jenkins/.ssh/webserver.pem ubuntu@16.171.208.10                     
-                    "ls -l /var/www/html/index.html"
-                '''
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Website deployed successfully!'
-        }
-        failure {
-            echo 'Deployment failed. Check Console Output.'
-        }
-    }
-}
-pipeline {
-    agent any
-
     options {
         skipDefaultCheckout(true)
     }
@@ -49,7 +10,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/cjcnkolhe/b53_zoomwebapp.git'
+                    url: 'https://github.com/poonamumare05-lang/jenkins-html-project.git'
             }
         }
 
